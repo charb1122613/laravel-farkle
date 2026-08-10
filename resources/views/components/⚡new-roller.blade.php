@@ -3,6 +3,7 @@
 use Livewire\Component;
 use Livewire\Attributes\On;
 use App\Services\FarkleScorer;
+use App\Services\FarkleBot;
 use App\Enums\Players;
 
 new class extends Component
@@ -13,6 +14,7 @@ new class extends Component
     public bool $startFlag = false;
     public bool $farkleFlag = false;
     public bool $winFlag = false;
+    public bool $vsCPU = true;
 
     public int $roundTotal = 0;
     public int $rollSize = 6;
@@ -142,6 +144,10 @@ new class extends Component
         $this->rolls = [1, 1, 1, 1, 1, 1];
         $this->hand = [];
         $this->melds = [];
+
+        if ($this->activePlayer === Players::p2 && $this->vsCPU) {
+            FarkleBot::playTurn($this);
+        }
     }
 
     #[On('winner')]
