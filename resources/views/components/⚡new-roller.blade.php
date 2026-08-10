@@ -22,6 +22,7 @@ new class extends Component
     public array $rolls = [1, 1, 1, 1, 1, 1];
     public array $hand = [];
     public array $melds = [];
+    public array $cpuHand = [];
 
     public function roll()
     {
@@ -146,7 +147,7 @@ new class extends Component
         $this->melds = [];
 
         if ($this->activePlayer === Players::p2 && $this->vsCPU) {
-            FarkleBot::playTurn($this);
+            $this->cpuRollPhase();
         }
     }
 
@@ -170,10 +171,44 @@ new class extends Component
         $this->activePlayer = Players::p1;
         $this->dispatch('new-game');
     }
+
+    public function cpuRollPhase()
+    {
+        $this->roll();
+        $this->cpuHand = FarkleBot::cpuRoll($this, $this->rolls);
+        $this->dispatch('trigger-cpu-select')->self();
+    }
+
+    public function cpuSelectPhase()
+    {
+        if ($this->farkleFlag) {
+            $this->dispatch('trigger-cpu-end')->self();
+            return;
+        }
+
+        if (!empty($this->cpuHand)) {
+            $index = array_pop($this->cpuHand);
+            $this->selectDie($index, $this->rolls[$index]);
+            $this->dispatch('trigger-cpu-select')->self();
+        } else if (count($this->hand) === 6) {
+            $this->dispatch('trigger-cpu-roll')->self();
+        }
+    }
+
+    public function cpuEndPhase()
+    {
+        $this->endTurn();
+    }
 };
 ?>
 
-<div class="game-container">
+<div
+    class="game-container"
+    x-data
+    x-on:trigger-cpu-roll="setTimeout(() => $wire.cpuRollPhase(), 1000)"
+    x-on:trigger-cpu-select="setTimeout(() => $wire.cpuSelectPhase(), 1000)"
+    x-on:trigger-cpu-end="setTimeout(() => $wire.cpuEndPhase(), 1000)"
+>
     <div class="roll-header">
         <h2>
             Roll
