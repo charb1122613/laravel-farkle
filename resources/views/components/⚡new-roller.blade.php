@@ -11,10 +11,11 @@ new class extends Component
     public Players $activePlayer = Players::p1;
     public Players $winner = Players::p1;
 
+    public bool $newGameFlag = true;
     public bool $startFlag = false;
     public bool $farkleFlag = false;
     public bool $winFlag = false;
-    public bool $vsCPU = true;
+    public bool $vsCPU = false;
 
     public int $roundTotal = 0;
     public int $rollSize = 6;
@@ -129,24 +130,28 @@ new class extends Component
             player: $this->activePlayer,
             total: $this->roundTotal
         );
+    }
 
-        match($this->activePlayer) {
-            Players::p1 => $this->activePlayer = Players::p2,
-            Players::p2 => $this->activePlayer = Players::p1,
-            default => null,
-        };
+    #[On('next-turn')]
+    public function nextTurn()
+    {
+        if ($this->vsCPU) {
+            match($this->activePlayer) {
+                Players::p1 => $this->activePlayer = Players::cpu,
+                Players::cpu => $this->activePlayer = Players::p1,
+                default => null,
+            };
+        } else {
+            match($this->activePlayer) {
+                Players::p1 => $this->activePlayer = Players::p2,
+                Players::p2 => $this->activePlayer = Players::p1,
+                default => null,
+            };
+        }
 
-        $this->startFlag = false;
-        $this->farkleFlag = false;
+        $this->resetGameState();
 
-        $this->roundTotal = 0;
-        $this->rollSize = 6;
-
-        $this->rolls = [1, 1, 1, 1, 1, 1];
-        $this->hand = [];
-        $this->melds = [];
-
-        if ($this->activePlayer === Players::p2 && $this->vsCPU) {
+        if ($this->activePlayer === Players::cpu && !$this->winFlag) {
             $this->cpuRollPhase();
         }
     }
@@ -159,17 +164,43 @@ new class extends Component
         match($playerEnum) {
             Players::p1 => $this->winner = Players::p1,
             Players::p2 => $this->winner = Players::p2,
+            Players::cpu => $this->winner = Players::cpu,
             default => null,
         };
 
+        $this->newGameFlag = true;
         $this->winFlag = true;
     }
 
-    public function newGame()
+    public function resetGameState()
     {
+        $this->startFlag = false;
+        $this->farkleFlag = false;
+
+        $this->roundTotal = 0;
+        $this->rollSize = 6;
+
+        $this->rolls = [1, 1, 1, 1, 1, 1];
+        $this->hand = [];
+        $this->melds = [];
+    }
+
+    public function newGame($vsCpuSelected)
+    {
+        $this->newGameFlag = false;
         $this->winFlag = false;
+        $this->vsCPU = $vsCpuSelected;
+
+        $this->resetGameState();
+
         $this->activePlayer = Players::p1;
-        $this->dispatch('new-game');
+
+
+        if ($vsCpuSelected) {
+            $this->dispatch('new-cpu');
+        } else {
+            $this->dispatch('new-pvp');
+        }
     }
 
     public function cpuRollPhase()
@@ -190,8 +221,11 @@ new class extends Component
             $index = array_pop($this->cpuHand);
             $this->selectDie($index, $this->rolls[$index]);
             $this->dispatch('trigger-cpu-select')->self();
-        } else if (count($this->hand) === 6) {
+        } else if (count($this->hand) === 6 || count($this->rolls) >= 4) {
             $this->dispatch('trigger-cpu-roll')->self();
+        } else {
+            $this->dispatch('trigger-cpu-end')->self();
+            return;
         }
     }
 
@@ -215,8 +249,9 @@ new class extends Component
         </h2>
         <div @class([
             'active-player',
-            'active-one' => $activePlayer == Players::p1,
-            'active-two' => $activePlayer == Players::p2,
+            'player-one' => $activePlayer == Players::p1,
+            'player-two' => $activePlayer == Players::p2,
+            'player-cpu' => $activePlayer == Players::cpu,
         ])>
             <span>{{ $activePlayer }}</span>
         </div>
@@ -293,7 +328,7 @@ new class extends Component
     <button
         wire:click="roll"
         class="btn roll-btn"
-        @if (!$this->validateSet($hand) && $startFlag)
+        @if ($activePlayer === Players::cpu || (!$this->validateSet($hand) && $startFlag))
             disabled
         @endif
     >
@@ -307,7 +342,7 @@ new class extends Component
     <button
         wire:click="endTurn"
         class="btn end-btn"
-        @if (!$this->startFlag || (!$this->validateSet($hand) && !$farkleFlag))
+        @if (!$this->startFlag || (!$this->validateSet($hand) && !$farkleFlag) || $activePlayer === Players::cpu)
             disabled
         @endif
     >
@@ -315,17 +350,30 @@ new class extends Component
     </button>
 
     <div @class([
-        'winner-container',
-        'hidden' => !$winFlag,
+        'overlay-container',
+        'hidden' => !$newGameFlag,
     ])>
-        <div class="winner-message">
-            <span>{{ $winner }} wins!</span>
-            <button
-                wire:click="newGame"
-                class="btn btn-again"
-            >
-                Play again
-            </button>
+        <div class="overlay-message">
+            @if ($winFlag)
+                <span class="winner-message">{{ $winner }} wins!</span>
+                <span>Play again?</span>
+            @else
+                <span>Choose an opponent</span>
+            @endif
+            <div class="overlay-btn">
+                <button
+                    wire:click="newGame(false)"
+                    class="btn btn-new-game"
+                >
+                    PvP
+                </button>
+                <button
+                    wire:click="newGame(true)"
+                    class="btn btn-new-game"
+                >
+                    CPU
+                </button>
+            </div>
         </div>
     </div>
 </div>

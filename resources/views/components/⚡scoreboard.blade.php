@@ -6,8 +6,11 @@ use App\Enums\Players;
 
 new class extends Component
 {
+    public bool $vsCPU = false;
+
     public int $pOneTotal = 0;
     public int $pTwoTotal = 0;
+    public int $pCpuTotal = 0;
 
     #[On('turn-end')]
     public function handleTurnEnd($player, $total)
@@ -17,38 +20,60 @@ new class extends Component
         match($playerEnum) {
             Players::p1 => $this->pOneTotal += $total,
             Players::p2 => $this->pTwoTotal += $total,
+            Players::cpu => $this->pCpuTotal += $total,
             default => null,
         };
 
-        if ($this->pOneTotal >= 10000) {
-            $this->dispatch('winner',
-                player: Players::p1
-            );
-        }
+        $winner = match (true) {
+            $this->pOneTotal >= 2000 => Players::p1,
+            $this->pTwoTotal >= 2000 => Players::p2,
+            $this->pCpuTotal >= 2000 => Players::cpu,
+            default => null,
+        };
 
-        if ($this->pTwoTotal >= 10000) {
+        if ($winner) {
             $this->dispatch('winner',
-                player: Players::p2
+                player: $winner
             );
+        } else {
+            $this->dispatch('next-turn');
         }
     }
     
-    #[On('new-game')]
-    public function newGame()
+    #[On('new-pvp')]
+    public function newPvP()
     {
+        $this->vsCPU = false;
         $this->pOneTotal = 0;
         $this->pTwoTotal = 0;
+        $this->pCpuTotal = 0;
+    }
+
+     #[On('new-cpu')]
+    public function newCPU()
+    {
+        $this->vsCPU = true;
+        $this->pOneTotal = 0;
+        $this->pTwoTotal = 0;
+        $this->pCpuTotal = 0;
     }
 };
 ?>
 
 <div class="score-container">
-    <div id="player-one">
-        <span class="player">Player 1</span>
+    <div class="player-one">
+        <span class="player">{{ Players::p1 }}</span>
         <span class="score">{{ $pOneTotal }}</span>
     </div>
-    <div id="player-two">
-        <span class="player">Player 2</span>
-        <span class="score">{{ $pTwoTotal }}</span>
-    </div>
+    @if ($vsCPU)
+        <div class="player-cpu">
+            <span class="player">{{ Players::cpu }}</span>
+            <span class="score">{{ $pCpuTotal }}</span>
+        </div>
+    @else
+        <div class="player-two">
+            <span class="player">{{ Players::p2 }}</span>
+            <span class="score">{{ $pTwoTotal }}</span>
+        </div>
+    @endif
 </div>
