@@ -93,7 +93,7 @@
     border: solid 2px #2580e9;
     border-radius: 2rem;
     padding: 0.5rem 3rem;
-    transition: all 100ms ease-in;    
+    transition: all 100ms ease-in;
 }
 
 .btn:hover {
@@ -156,6 +156,7 @@ html, body {
 }
 
 .container {
+    position: relative;
     margin: auto;
     display: grid;
     grid-template-areas:
@@ -198,6 +199,41 @@ html, body {
 
 .header-container {
     grid-area: header;
+    position: relative;
+}
+
+.header-links {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.header-links a, .header-links button {
+    color: #2580e9;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1rem;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid #2580e9;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 100ms ease-in;
+}
+
+.header-links a:hover, .header-links button:hover {
+    color: #fff;
+    background-color: #2580e9;
+}
+
+.header-links a:active, .header-links button:active {
+    background-color: #98c0ec;
 }
 
 .game-container {
@@ -407,4 +443,32 @@ hr.tapered {
 
 .hidden {
     display: none;
+}
+
+.how-to-body {
+    position: relative;
+    top: 0;
+    left: 0;
+    /* height: 80%; */
+    overflow: hidden;
+    color: #fff;
+    background-color: #2580e9;
+    padding: 3rem 5rem;
+    margin: 3rem;
+    border-radius: 2rem;
+}
+
+.how-to-body h2 {
+    font-size: 2.5rem;
+    text-align: center;
+}
+
+.how-to-body p {
+    font-size: 1.5rem;
+}
+
+.how-to-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
 }

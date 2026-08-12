@@ -13,10 +13,15 @@
 
     <!-- Styles / Scripts -->
     @vite(['resources/css/dice.css'])
+    @vite(['resources/js/app.js'])
 </head>
 <body>
     <div class="container">
         <div class="header-container">
+            <div class="header-links">
+                <a href="#">Return to Portfolio</a>
+                <button id="btn-open-how-to">How to Play</button>
+            </div>
             <div id="main-title" class="flex justify-center items-center h-64">
                 <svg viewBox="0 0 500 100">
                     <path id="text-arch" d="M 50,200 A 220,220 0 0,1 450,200" fill="none" />
@@ -39,6 +44,10 @@
         <livewire:scoreboard/>
 
         <x-scoring-sidebar />
+
+        <x-how-to-play />
     </div>
+
+    <script src=""></script>
 </body>
 </html>
