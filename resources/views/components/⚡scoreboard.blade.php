@@ -25,9 +25,9 @@ new class extends Component
         };
 
         $winner = match (true) {
-            $this->pOneTotal >= 2000 => Players::p1,
-            $this->pTwoTotal >= 2000 => Players::p2,
-            $this->pCpuTotal >= 2000 => Players::cpu,
+            $this->pOneTotal >= 10000 => Players::p1,
+            $this->pTwoTotal >= 10000 => Players::p2,
+            $this->pCpuTotal >= 10000 => Players::cpu,
             default => null,
         };
 

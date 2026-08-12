@@ -221,7 +221,7 @@ new class extends Component
             $index = array_pop($this->cpuHand);
             $this->selectDie($index, $this->rolls[$index]);
             $this->dispatch('trigger-cpu-select')->self();
-        } else if (count($this->hand) === 6 || count($this->rolls) >= 4) {
+        } else if (count($this->rolls) === 0 || count($this->rolls) >= 4) {
             $this->dispatch('trigger-cpu-roll')->self();
         } else {
             $this->dispatch('trigger-cpu-end')->self();
@@ -275,10 +275,10 @@ new class extends Component
     </div>
     <div @class([
         'dice-container',
-        'active-dice' => $startFlag && !$farkleFlag,
+        'active-dice' => $startFlag && !$farkleFlag && $activePlayer !== Players::cpu,
     ])>
         @foreach ($rolls as $index => $rollValue)
-            @if ($startFlag && !$farkleFlag)
+            @if ($startFlag && !$farkleFlag && $activePlayer !== Players::cpu)
                 <x-dice :value="$rollValue" wire:click="selectDie({{ $index }}, {{ $rollValue }})" />
             @else
                 <x-dice :value="$rollValue" />
@@ -292,9 +292,16 @@ new class extends Component
         Hand
     </h2>
     <div class="hand-container">
-        <div class="dice-container active-dice">
+        <div @class([
+            'dice-container',
+            'active-dice' => $activePlayer !== Players::cpu,
+        ])>
             @foreach ($hand as $selectedDie)
-                <x-dice :value="$selectedDie['die_value']" wire:click="deselectDie({{ $selectedDie['die_index'] }})" />
+                @if ($activePlayer !== Players::cpu)
+                    <x-dice :value="$selectedDie['die_value']" wire:click="deselectDie({{ $selectedDie['die_index'] }})" />
+                @else
+                    <x-dice :value="$selectedDie['die_value']" />
+                @endif
             @endforeach
         </div>
         <div class="hand-score">

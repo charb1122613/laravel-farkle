@@ -7,6 +7,7 @@ class FarkleBot
     public static function cpuRoll($game, array $cpuRolls): array
     {
         $cpuHand = [];
+        $targetValues = [1, 5];
 
         $counts = array_count_values($cpuRolls);
 
@@ -57,31 +58,72 @@ class FarkleBot
             array_push($cpuHand, ...array_keys($cpuRolls, $target, true));
         }
 
-        if (count($couple) !== 0) {
-            $targetValues = [1, 5];
-
+        if (count($cpuHand) === 0 && $game->rolls > 3) {
             foreach ($targetValues as $target) {
-                if (in_array($target, $couple, true)) {
-                    array_push($cpuHand, ...array_keys($cpuRolls, $target, true));
+                if (in_array($target, $couple, true) || in_array($target, $single, true)) {
+                    $cpuHand[] = array_search($target, $cpuRolls, true);
+                    break;
+                }
+            }
+        } else {
+            if (count($couple) !== 0) {
+                foreach ($targetValues as $target) {
+                    if (in_array($target, $couple, true)) {
+                        array_push($cpuHand, ...array_keys($cpuRolls, $target, true));
+                    }
+                }
+            }
+
+            if (count($single) !== 0) {
+                foreach ($targetValues as $target) {
+                    if (in_array($target, $single, true)) {
+                        array_push($cpuHand, ...array_keys($cpuRolls, $target, true));
+                    }
                 }
             }
         }
 
-        if (count($single) !== 0) {
-            $targetValues = [1, 5];
+        // if (count($couple) !== 0) {
+        //     $targetValues = [1, 5];
 
-            foreach ($targetValues as $target) {
-                if (in_array($target, $single, true)) {
-                    array_push($cpuHand, ...array_keys($cpuRolls, $target, true));
-                }
-            }
-        }
+        //     if (count($cpuHand) === 0 && $game->rolls > 3) {
+        //         if (in_array(1, $couple, true)) {
+        //             $cpuHand[] = array_search(1, $cpuRolls, true);
+        //         } else if (in_array(5, $couple, true)) {
+        //             $cpuHand[] = array_search(5, $cpuRolls, true);
+        //         }
+        //     } else {
+        //         foreach ($targetValues as $target) {
+        //             if (in_array($target, $couple, true)) {
+        //                 array_push($cpuHand, ...array_keys($cpuRolls, $target, true));
+        //             }
+        //         }
+        //     }
+        // }
+
+        // if (count($single) !== 0) {
+        //     $targetValues = [1, 5];
+
+        //     if (count($cpuHand) === 0 && $game->rolls > 3) {
+        //         if (in_array(1, $single, true)) {
+        //             $cpuHand[] = array_search(1, $cpuRolls, true);
+        //         } else if (in_array(5, $single, true)) {
+        //             $cpuHand[] = array_search(5, $cpuRolls, true);
+        //         }
+        //     } else {
+        //         foreach ($targetValues as $target) {
+        //             if (in_array($target, $single, true)) {
+        //                 array_push($cpuHand, ...array_keys($cpuRolls, $target, true));
+        //             }
+        //         }
+        //     }
+        // }
 
         return $cpuHand;
     }
 
-    public static function cpuSelect($game, array $cpuRolls, int $index) : void
-    {
-        $game->selectDie($index, $cpuRolls[$index]);
-    }
+    // public static function cpuSelect($game, array $cpuRolls, int $index) : void
+    // {
+    //     $game->selectDie($index, $cpuRolls[$index]);
+    // }
 }
