@@ -13,7 +13,7 @@
 
     <!-- Styles / Scripts -->
     @vite(['resources/css/dice.css'])
-    @vite(['resources/js/app.js'])
+    @vite(['resources/js/how-to.js'])
 </head>
 <body>
     <div class="container">
