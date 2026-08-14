@@ -9,7 +9,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/dice.css',
-                'resources/js/app.js'
+                'resources/js/app.js',
+                'resources/js/how-to.js'
             ],
             refresh: true,
             fonts: [
