@@ -313,10 +313,11 @@ new class extends Component
         </div>
     </div>
 
-    <h2>
-        Melds
-    </h2>
+    
     <div class="melds-container">
+        <h2>
+            Melds
+        </h2>
         @foreach ($melds as $key => $set)
             <div class="meld-line">
                 @foreach ($set['meld'] as $die)

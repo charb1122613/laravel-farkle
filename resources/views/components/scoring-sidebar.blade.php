@@ -1,5 +1,12 @@
 <div class="rules-wrapper">
             <div class="rules-container">
+
+                <div class="rules-menu">
+                    <button id="btn-close-menu">Close</button>
+                    <button class="btn-open-how-to">How to play</button>
+                    <a href="#">Return to Portfolio</a>
+                </div>
+
                 <h2>Scoring</h2>
 
                 <div class="rules-row">

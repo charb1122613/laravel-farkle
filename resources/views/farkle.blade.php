@@ -13,18 +13,21 @@
 
     <!-- Styles / Scripts -->
     @vite(['resources/css/dice.css'])
-    @vite(['resources/js/how-to.js'])
+    @vite(['resources/js/responsive.js'])
 </head>
 <body>
     <div class="container">
         <div class="header-container">
-            <div class="header-links">
+            <div class="header-links hl-large">
                 <a href="#">Return to Portfolio</a>
-                <button id="btn-open-how-to">How to Play</button>
+                <button class="btn-open-how-to">How to Play</button>
             </div>
-            <div id="main-title" class="flex justify-center items-center h-64">
-                <svg viewBox="0 0 500 100">
-                    <path id="text-arch" d="M 50,200 A 220,220 0 0,1 450,200" fill="none" />
+            <div class="header-links hl-small">
+                <button id="btn-open-menu">Menu</button>
+            </div>
+            <div id="main-title" class="w-full max-w-xl mx-auto">
+                <svg viewBox="0 0 500 120" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" class="w-full h-auto">
+                    <path id="text-arch" d="M 150,120 A 150,150 0 0,1 350,120" fill="none" />
 
                     <text fill="black">
                         <textPath href="#text-arch" startOffset="50%" text-anchor="middle">

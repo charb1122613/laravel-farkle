@@ -10,7 +10,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/dice.css',
                 'resources/js/app.js',
-                'resources/js/how-to.js'
+                'resources/js/responsive.js'
             ],
             refresh: true,
             fonts: [
