@@ -313,19 +313,44 @@ new class extends Component
         </div>
     </div>
 
-    
-    <div class="melds-container">
-        <h2>
-            Melds
-        </h2>
-        @foreach ($melds as $key => $set)
-            <div class="meld-line">
-                @foreach ($set['meld'] as $die)
-                    <x-dice :value="$die" />  
-                @endforeach
-                {{ $set['points'] }}
+    <div class="melds-container"
+        x-data="{
+            displayMelds: window.innerWidth >= 1400
+        }"
+        @resize.window="if (window.innerWidth >= 1400) displayMelds = true"
+    >
+        <div class="melds-title">
+            <h2>
+                Melds
+            </h2>
+            <button class="btn btn-view-melds"
+                @click="displayMelds = !displayMelds"
+            >
+                View
+            </button>
+        </div>
+        <div class="melds-wrapper" 
+            x-show="displayMelds"
+            x-cloak
+            :class="{ 'hidden': !displayMelds }"
+        >
+            @foreach ($melds as $key => $set)
+                <div class="meld-line">
+                    @foreach ($set['meld'] as $die)
+                        <x-dice :value="$die" />  
+                    @endforeach
+                    {{ $set['points'] }}
+                </div>
+            @endforeach
+            <div class="melds-btn-container">
+                <button class="btn btn-view-melds"
+                    @click="displayMelds = !displayMelds"
+                >
+                    Close
+                </button>
             </div>
-        @endforeach
+        </div>
+        
         <div class="meld-line">
             Total: <span>{{ $this->roundTotal}}</span> pts.
         </div>

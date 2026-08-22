@@ -50,7 +50,5 @@
 
         <x-how-to-play />
     </div>
-
-    <script src=""></script>
 </body>
 </html>
