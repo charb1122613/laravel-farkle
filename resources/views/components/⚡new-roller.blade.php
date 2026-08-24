@@ -238,7 +238,10 @@ new class extends Component
 
 <div
     class="game-container"
-    x-data
+    x-data="{
+        displayMelds: window.innerWidth >= 1400
+    }"
+    @resize.window="if (window.innerWidth >= 1400) displayMelds = true"
     x-on:trigger-cpu-roll="setTimeout(() => $wire.cpuRollPhase(), 1000)"
     x-on:trigger-cpu-select="setTimeout(() => $wire.cpuSelectPhase(), 1000)"
     x-on:trigger-cpu-end="setTimeout(() => $wire.cpuEndPhase(), 1000)"
@@ -313,47 +316,34 @@ new class extends Component
         </div>
     </div>
 
-    <div class="melds-container"
-        x-data="{
-            displayMelds: window.innerWidth >= 1400
-        }"
-        @resize.window="if (window.innerWidth >= 1400) displayMelds = true"
+    <h2 id="melds-title">
+        Melds
+    </h2>
+    <div class="melds-container" 
+        x-show="displayMelds"
+        x-cloak
+        :class="{ 'hidden': !displayMelds }"
     >
-        <div class="melds-title">
-            <h2>
-                Melds
-            </h2>
-            <button class="btn btn-view-melds"
+        @foreach ($melds as $key => $set)
+            <div class="meld-line">
+                @foreach ($set['meld'] as $die)
+                    <x-dice :value="$die" />  
+                @endforeach
+                {{ $set['points'] }}
+            </div>
+        @endforeach
+        <div class="melds-btn-container">
+            <button
+                class="btn btn-view-melds"
                 @click="displayMelds = !displayMelds"
             >
-                View
+                Close
             </button>
         </div>
-        <div class="melds-wrapper" 
-            x-show="displayMelds"
-            x-cloak
-            :class="{ 'hidden': !displayMelds }"
-        >
-            @foreach ($melds as $key => $set)
-                <div class="meld-line">
-                    @foreach ($set['meld'] as $die)
-                        <x-dice :value="$die" />  
-                    @endforeach
-                    {{ $set['points'] }}
-                </div>
-            @endforeach
-            <div class="melds-btn-container">
-                <button class="btn btn-view-melds"
-                    @click="displayMelds = !displayMelds"
-                >
-                    Close
-                </button>
-            </div>
-        </div>
-        
-        <div class="meld-line">
-            Total: <span>{{ $this->roundTotal}}</span> pts.
-        </div>
+    </div>
+    
+    <div class="meld-line">
+        Total: <span>{{ $this->roundTotal}}</span> pts.
     </div>
 
     <hr class="tapered">
@@ -380,6 +370,13 @@ new class extends Component
         @endif
     >
         End
+    </button>
+
+    <button
+        class="btn btn-view-melds"
+        @click="displayMelds = !displayMelds"
+    >
+        Melds
     </button>
 
     <div @class([
